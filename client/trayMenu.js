@@ -1,6 +1,4 @@
 // trayMenu.js
-// const path = require("path");
-// const { Tray, Menu } = require("electron");
 import path from "path";
 import { Tray, Menu } from "electron";
 import { fileURLToPath } from 'url';
@@ -52,5 +50,3 @@ export function createTray(mainWindow, onQuit) {
     tray.popUpContextMenu();
   });
 }
-
-// module.exports = { createTray };
