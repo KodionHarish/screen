@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>🔐 Login</h2>
+    <div id="loginError" class="error-message"></div>
+    <form id="loginForm">
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
+  </div>
+
+  <script type="module" src="js/loginHandler.js"></script>
+</body>
+</html>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
