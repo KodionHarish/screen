@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register</title>
-  <link rel="stylesheet" href="styles/style.css" />
-</head>
-<body>
- <div class="register-container">
-    <h2>📝 Register</h2>
-    <div id="registerError" class="error-message"></div>
-    <form id="registerForm">
-      <input name="name" placeholder="Name" required />
-      <input name="email" placeholder="Email" required />
-      <input name="designation" placeholder="Designation" required />
-      <input name="company" placeholder="Company" required />
-      <input name="password" type="password" placeholder="Password" required />
-      <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="login.html">Login here</a></p>
-  </div>
-  <script src="js/formHandler.js" type="module"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <div class="register-container">
+      <h2>📝 Register</h2>
+      <div id="registerError" class="error-message"></div>
+      <form id="registerForm">
+        <input name="name" placeholder="Name" required />
+        <input name="email" placeholder="Email" required />
+        <input name="designation" placeholder="Designation" required />
+        <input name="company" placeholder="Company" required />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+    <script src="js/formHandler.js" type="module"></script>
+  </body>
 </html>

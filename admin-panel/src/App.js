@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router , Routes , Route , Navigate, } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Login from "./pages/auth/Login";
 import PrivateRoute from "./components/PrivateRoute";

@@ -22,7 +22,7 @@ const authorizeRole = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return errorResponse(res, 'Forbidden - Insufficient permissions', HTTP_STATUS.FORBIDDEN);
-    }
+    } 
     next();
   };
 };
@@ -30,4 +30,4 @@ const authorizeRole = (roles) => {
 module.exports = {
   authenticate,
   authorizeRole
-};
+};  
