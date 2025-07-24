@@ -49,7 +49,6 @@ function calculateKeyPressVariety(keyPressDetails) {
 class ActivityController {
 
   // Updated logActivity method for your controller
-
   static async logActivity(req, res) {
   try {
     const {
@@ -143,7 +142,6 @@ class ActivityController {
   }
 }
 
-
   static getSocketIdByUserId(userId) {
     console.log(connectedUsers,userId,'connectedUsers')
   for (const [socketId, uId] of connectedUsers.entries()) {
@@ -165,6 +163,7 @@ class ActivityController {
       errorResponse(res, error.message);
     }
   }
+
   static async getUserActivities(req, res) {
     try {
       const userId = req.params.userId;
@@ -190,6 +189,37 @@ class ActivityController {
       errorResponse(res, error.message);
     }
   }
+
+  static async deleteOldLogs(req, res) {
+    try {
+      const days = parseInt(req.query.days) || 15; // Default to 15 days if not specified
+      console.log(days,"days")
+      // Validate days parameter 
+      if (days < 1 || days > 365) {
+        return res.status(400).json({
+          success: false,
+          message: 'Days parameter must be between 1 and 365'
+        });
+      }
+
+      const deletedCount = await ActivityService.deleteOldLogs(days);
+      
+      res.status(200).json({
+        success: true,
+        message: `Successfully deleted ${deletedCount} old log entries`,
+        deletedCount: deletedCount,
+        cutoffDays: days
+      });
+    } catch (error) {
+      console.error('Error deleting old logs:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete old logs',
+        error: error.message
+      });
+    }
+  }
+  
 }
 
 module.exports = ActivityController;

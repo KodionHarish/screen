@@ -110,6 +110,52 @@ class ActivityService {
     });
     return allLogs;
   }
+
+  static async deleteOldLogs(days = 15) {
+    try {
+      const activities = await Activity.getAllActivities();
+      const db = getConnection();
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - days);
+
+      let totalDeleted = 0;
+
+      for (const row of activities) {
+        const userId = row.userId;
+        let logs = [];
+        
+        try {
+          logs = JSON.parse(row.activity_data || "[]");
+        } catch (parseError) {
+          console.error(`Invalid JSON for user ${userId}:`, parseError);
+          continue; // Skip this user if JSON is invalid
+        }
+
+        const originalCount = logs.length;
+        const filteredLogs = logs.filter((log) => {
+          if (!log.timestamp) return true; // keep logs without timestamp
+          const logDate = new Date(log.timestamp);
+          return logDate >= cutoffDate; // keep only recent logs
+        });
+
+        const deletedCount = originalCount - filteredLogs.length;
+        if (deletedCount > 0) {
+          await db.execute(
+            "UPDATE activity_logs SET activity_data = ? WHERE user_id = ?",
+            [JSON.stringify(filteredLogs), userId]
+          );
+          totalDeleted += deletedCount;
+          console.log(`Deleted ${deletedCount} old logs for user ${userId}`);
+        }
+      }
+
+      console.log(`Total deleted logs: ${totalDeleted}`);
+      return totalDeleted;
+    } catch (error) {
+      console.error('Error in deleteOldLogs:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ActivityService;
