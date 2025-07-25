@@ -4,7 +4,7 @@ const fs = require("fs");
 const screenshot = require("screenshot-desktop");
 const ElectronStore = require("electron-store").default;
 const axios = require("axios");
-// require('dotenv').config();
+require('dotenv').config();
 const FormData = require("form-data");
 const { GlobalKeyboardListener } = require("node-global-key-listener");
 const { activeWindow } = require("get-windows");
@@ -83,7 +83,10 @@ function createWindow() {
 
 function connectToBackendSocket(userId) {
   // Connect with userId as query param
-  socket = io("http://localhost:5000", {
+  socket = io(
+    // "http://localhost:5000",
+    `${process.env.Api_Base_URL}`,
+  {
     query: { userId },
     transports: ["websocket"],
   });
@@ -626,7 +629,10 @@ async function logActivity(data, memoText = "") {
       contentType: "image/jpeg",
     });
 
-    const response = await axios.post("http://localhost:5000/api/activities/log", form, {
+    const response = await axios.post(
+      // "http://localhost:5000/api/activities/log",
+      `${process.env.Api_Base_URL}/api/activities/log`,
+       form, {
       headers: form.getHeaders(),
       timeout: 30000, // 30 second timeout
     });

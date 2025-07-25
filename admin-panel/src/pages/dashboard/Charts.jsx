@@ -38,7 +38,8 @@ const Charts = () => {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/users/getAllUsersCount",
+        `${process.env.REACT_APP_API_BASE_URL}/api/users/getAllUsersCount`,
+        // "http://localhost:5000/api/users/getAllUsersCount",
         {
           withCredentials: true,
         }
@@ -52,7 +53,8 @@ const Charts = () => {
   const fetchActivityLogs = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/activities/all-activity",
+        `${process.env.REACT_APP_API_BASE_URL}/api/activities/all-activity`,
+        // "http://localhost:5000/api/activities/all-activity",
         { withCredentials: true }
       );
 
@@ -144,7 +146,8 @@ const Charts = () => {
   const handleDeleteOldLogs = async () => {
     try {
       const res = await axios.delete(
-        `http://localhost:5000/api/activities/old-logs?days=${selectedDays}`,
+        // `http://localhost:5000/api/activities/old-logs?days=${selectedDays}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/activities/old-logs?days=${selectedDays}`,
         { withCredentials: true }
       );
       if (res.data.success) {

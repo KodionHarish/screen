@@ -19,7 +19,8 @@ const Sidebar = ({ setViewMode }) => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        `http://localhost:5000/api/auth/logout`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/auth/logout`,
+        // `http://localhost:5000/api/auth/logout`,
         {},
         { withCredentials: true }
       );

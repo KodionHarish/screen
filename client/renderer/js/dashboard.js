@@ -3,7 +3,6 @@ let socket = null;
 let currentUserId = null;
 const userInfo = document.getElementById("userInfo");
 const logoutBtn = document.getElementById("logoutBtn");
-
 // ✅ Tracking control elements
 let trackingToggleBtn = null;
 let trackingStatusDiv = null;
@@ -320,10 +319,14 @@ function showAdminTrackingBanner(message) {
 }
 // dashboard.js - Updated connection handling
 
-function initializeSocket(userId) {
+function initializeSocket(userId,apiBaseUrl) {
   currentUserId = userId;
-
-  socket = io("http://localhost:5000", {
+  const socketUrl = apiBaseUrl || "http://localhost:5000";
+  socket = io(
+    // "http://localhost:5000", 
+    socketUrl,
+    // `${process.env.Api_Base_URL}`,
+  {
     query: { userId: userId },
     withCredentials: true,
   });
@@ -890,16 +893,19 @@ function createNotificationStyles() {
 (async () => {
   try {
     console.log("🚀 Starting dashboard initialization...");
-
     const token = await window.electronAPI.getToken();
     if (!token) {
       console.log("❌ No token found, redirecting to login");
       window.location.href = "login.html";
       return;
     }
+    const apiBaseUrl = window.electronAPI.getApiBaseUrl() || "http://localhost:5000";
 
     // Load user profile
-    const res = await fetch("http://localhost:5000/api/users/profile", {
+    const res = await fetch(
+      // "http://localhost:5000/api/users/profile", 
+     `${apiBaseUrl}/api/users/profile`,
+    {
       headers: {
         Authorization: `Bearer ${token}`,
       },
