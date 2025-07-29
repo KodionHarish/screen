@@ -412,7 +412,7 @@ function startEnhancedInputTracking() {
           mouseClickDetails.scroll = (mouseClickDetails.scroll || 0) + 1;
         }
 
-        console.log(`🖱️ Mouse ${button} (Count: ${mouseClickDetails[button] || mouseClickDetails.scroll})`);
+        // console.log(`🖱️ Mouse ${button} (Count: ${mouseClickDetails[button] || mouseClickDetails.scroll})`);
 
         if (mainWindow && !mainWindow.isDestroyed()) {
           try {
@@ -432,7 +432,7 @@ function startEnhancedInputTracking() {
         keyPressDetails[keyName] = (keyPressDetails[keyName] || 0) + 1;
         lastKeyPressTime[keyName] = new Date();
 
-        console.log(`⌨️ Key pressed: ${keyName} (Count: ${keyPressDetails[keyName]})`);
+        // console.log(`⌨️ Key pressed: ${keyName} (Count: ${keyPressDetails[keyName]})`);
 
         if (mainWindow && !mainWindow.isDestroyed()) {
           try {
@@ -712,8 +712,7 @@ app.on("will-quit", (event) => {
 
 // ✅ Handle uncaught exceptions to prevent crashes
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
-  // Don't exit the process, just log the error
+  console.error('❌ Un caught Exception:', error);
 });
 
 process.on('unhandledRejection', (reason, promise) => {

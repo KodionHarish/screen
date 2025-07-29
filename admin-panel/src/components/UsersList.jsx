@@ -83,5 +83,5 @@ export default function UsersList({ viewMode, setViewMode }) {
       onDateChange={handleDateChange}
       onUserClick={fetchUserLogs}
     />
-  );
+  ); 
 }

@@ -1,19 +1,27 @@
 import { BrowserRouter as Router , Routes , Route , Navigate, } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Login from "./pages/auth/Login";
+import { lazy , Suspense } from "react";
+// import Login from "./pages/auth/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import Charts from "./pages/dashboard/Charts";
-import UserActivity from "./pages/dashboard/UserActivity";
-import UsersAll from "./pages/dashboard/Users";
-import { Users } from "lucide-react";
+import Loader from "./components/utils/Loader";
+const Login = lazy(() => import("./pages/auth/Login"));
+const Charts = lazy(() => import("./pages/dashboard/Charts"));
+const UserActivity = lazy(() => import("./pages/dashboard/UserActivity"));
+const UsersAll = lazy(() => import("./pages/dashboard/Users"));
+
+// import Charts from "./pages/dashboard/Charts";
+// import UserActivity from "./pages/dashboard/UserActivity";
+// import UsersAll from "./pages/dashboard/Users";
+// import { Users } from "lucide-react";
 
 function App() {
   const token = useSelector((state) => state.auth.token);
   return (
     <Router>
+      <Suspense fallback = {<Loader/>}>
       <Routes>
         <Route
           path="/"
@@ -44,6 +52,7 @@ function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />  
       </Routes> 
+      </Suspense>
     </Router>
   );
 }
