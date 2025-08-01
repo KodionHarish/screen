@@ -14,8 +14,8 @@ const SearchAndFilters = ({
         label="Search by name"
         size="small"
         variant="outlined"
-        value={searchTerm}
-        onChange={onSearchChange}
+        // value={searchTerm}
+        onKeyUp={onSearchChange}
       />
 
       <Autocomplete

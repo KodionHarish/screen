@@ -1,5 +1,5 @@
 // components/SendMessageModal.jsx
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -21,13 +21,15 @@ const SendMessageModal = ({
   notificationMessage,
   onMessageChange,
   onSendNotification,
+  textareaRef,
   onSendEmail,
   isLoading,
   isEmailLoading,
   sendStatus,
+  btnDisable = false,
+  textCount = 0, // New prop for text count
 }) => {
-  const textareaRef = useRef(null);
-
+  console.log(notificationMessage,"notificationMessage")
   const getStatusIcon = () => {
     if (sendStatus === "success")
       return <CheckCircle className="w-4 h-4 text-green-500" />;
@@ -52,6 +54,8 @@ const SendMessageModal = ({
     }
   };
 
+
+
   // Effect to handle focus management for modal
   useEffect(() => {
     if (open) {
@@ -67,8 +71,8 @@ const SendMessageModal = ({
 
       return () => clearTimeout(focusTimer);
     }
-  }, [open, notificationMessage.length]);
-
+  }, [open,textareaRef, notificationMessage.length]);
+  
   return (
     <Dialog
       open={open}
@@ -146,8 +150,9 @@ const SendMessageModal = ({
           rows={4}
           fullWidth
           variant="outlined"
-          value={notificationMessage}
-          onChange={onMessageChange}
+          // value={notificationMessage}
+          // value={textareaRef.current?.value}
+          onKeyUp={onMessageChange}
           onKeyDown={handleKeyDown}
           placeholder="Enter your message... (Ctrl+Enter to send)"
           disabled={isLoading || isEmailLoading}
@@ -201,8 +206,8 @@ const SendMessageModal = ({
           disabled={
             isLoading ||
             isEmailLoading ||
-            !notificationMessage.trim() ||
-            sendStatus === "success"
+            sendStatus === "success" ||
+            btnDisable
           }
           variant="contained"
           startIcon={
