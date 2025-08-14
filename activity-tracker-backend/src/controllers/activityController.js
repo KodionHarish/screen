@@ -2,6 +2,8 @@
 const ActivityService = require("../services/activityService");
 const { successResponse, errorResponse } = require("../utils/response");
 const connectedUsers = require("../utils/socketStore");
+const cloudinary = require('../config/cloudinary');
+const streamifier = require('streamifier');
 
 // ✅ Helper functions for processing detailed tracking data
 function getMostPressedKey(keyPressDetails) {
@@ -49,7 +51,7 @@ function calculateKeyPressVariety(keyPressDetails) {
 class ActivityController {
 
   // Updated logActivity method for your controller
-  static async logActivity(req, res) {
+  static async logActivity(req, res,screenshotUrl) {
   try {
     const {
       id,
@@ -63,6 +65,7 @@ class ActivityController {
       keyPressDetails,
       mouseClickDetails
     } = req.body;
+
 
     // Parse the JSON strings for detailed tracking data
     let parsedKeyPressDetails = {};
@@ -91,7 +94,8 @@ class ActivityController {
       keyboardCount: parseInt(keyboardCount),
       mouseCount: parseInt(mouseCount),
       memo: memo || "",
-      screenshotName: req.file ? req.file.originalname : null,
+      // screenshotName: req.file ? req.file.originalname : null,
+      screenshotUrl,
       timestamp: new Date().toISOString(),
       
       // ✅ NEW: Detailed tracking data
@@ -107,7 +111,7 @@ class ActivityController {
       totalMouseClicks: Object.values(parsedMouseClickDetails).reduce((sum, count) => sum + count, 0),
       dominantClickType: getDominantClickType(parsedMouseClickDetails),
     };
-
+ 
     await ActivityService.logActivity(userId, activityData);
     const io = req.app.get("io");
    
@@ -121,10 +125,6 @@ class ActivityController {
       }
     });
     
-    // console.log("✅ Activity logged successfully with detailed tracking:");
-    // console.log("📊 Key presses:", parsedKeyPressDetails);
-    // console.log("🖱️ Mouse clicks:", parsedMouseClickDetails);
-    
     successResponse(res, "Activity logged successfully", {
       keyStats: {
         totalKeys: parseInt(keyboardCount),
@@ -134,7 +134,8 @@ class ActivityController {
       mouseStats: {
         totalMouse: parseInt(mouseCount),
         clickBreakdown: parsedMouseClickDetails
-      }
+      },
+      screenshotUrl 
     });
   } catch (error) {
     console.log(error, 'Error logging activity with detailed tracking');

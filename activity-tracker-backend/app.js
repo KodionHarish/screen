@@ -32,7 +32,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Serve static files
-app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads", express.static(uploadsDir));  
 
 // Import routes
 const authRoutes = require("./src/routes/auth");
@@ -85,7 +85,7 @@ async function startServer() {
     
     // Start the server
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => {
+    server.listen(PORT,  '0.0.0.0', () => {
       console.log(`🚀 Server started successfully on port ${PORT}!`);
       console.log(`📡 Socket.IO server is ready for connections`);
     });

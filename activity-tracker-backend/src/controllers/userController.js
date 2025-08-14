@@ -35,7 +35,7 @@ class UserController {
   {
     try {
       const users = await UserService.usersWithLogs(req.query.date);
-      successResponse(res, 'Users retrieved successfully', users);
+      successResponse(res, 'UsersLogs retrieved successfully', users);
     } catch (error) {
       errorResponse(res, error.message);
     }

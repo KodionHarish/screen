@@ -4,7 +4,7 @@ const { errorResponse } = require('../utils/response');
 const { HTTP_STATUS } = require('../utils/constants')
 const authenticate = (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-  
+  console.log(token, "token in auth middleware");
   if (!token) {
     return errorResponse(res, 'Unauthorized - Token missing', HTTP_STATUS.UNAUTHORIZED);
   }
