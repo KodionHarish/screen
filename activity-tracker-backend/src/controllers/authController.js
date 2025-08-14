@@ -25,7 +25,7 @@ class AuthController {
       res.cookie('token', result.token, {
         httpOnly: true,
         secure: config.NODE_ENV === 'production',
-        sameSite: 'Strict',
+        sameSite: 'None',
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
        res.json({
@@ -45,7 +45,7 @@ class AuthController {
       res.clearCookie('token', {
         httpOnly: true,
         secure: config.NODE_ENV === 'production',
-        sameSite: 'Strict',
+        sameSite: 'None',
       });
       
       successResponse(res, 'Logged out successfully');

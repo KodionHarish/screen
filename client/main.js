@@ -86,6 +86,7 @@ function connectToBackendSocket(userId) {
   socket = io(
     // "http://localhost:5000",
     `${process.env.Api_Base_URL}`,
+    
   {
     query: { userId },
     transports: ["websocket"],

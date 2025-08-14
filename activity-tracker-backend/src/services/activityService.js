@@ -9,13 +9,15 @@ class ActivityService {
     if (!existingActivity) {
       await Activity.createActivityLog(userId, [activityData]);
     } else {
-      const currentActivities = JSON.parse(existingActivity.activity_data);
+      const currentActivities = existingActivity.activity_data;
+      // const currentActivities = JSON.parse(existingActivity.activity_data);
       currentActivities.push(activityData);
       await Activity.updateActivityLog(userId, currentActivities);
     }
   }
 
   static async deleteScreenshot(userId, id) {
+    console.log(userId,id,'console')
     const activityRecord = await Activity.findByUserId(userId);
 
     if (!activityRecord) {
@@ -25,7 +27,7 @@ class ActivityService {
     let activities = [];
 
     try {
-      activities = JSON.parse(activityRecord.activity_data || "[]");
+      activities = activityRecord.activity_data || "[]";
     } catch (error) {
       console.error("Invalid JSON in activity_data");
       return false;
@@ -36,7 +38,8 @@ class ActivityService {
     const db = getConnection();
     const [result] = await db.execute(
       "UPDATE activity_logs SET activity_data = ? WHERE user_id = ?",
-      [JSON.stringify(filteredActivities), userId]
+      // [JSON.stringify(filteredActivities), userId]
+      [filteredActivities, userId]
     );
 
     return result.affectedRows > 0;
@@ -49,6 +52,7 @@ class ActivityService {
       return { logs: [], total: 0 };
     }
 
+    // let activities = JSON.parse(activityRecord.activity_data || "[]");
     let activities = JSON.parse(activityRecord.activity_data || "[]");
 
     if (filterDate) {
@@ -59,7 +63,7 @@ class ActivityService {
       });
     }
 
-    const screenshotLogs = activities.filter((log) => log.screenshotName);
+    const screenshotLogs = activities.filter((log) => log.screenshotName || log.screenshotUrl);
 
     // Each screenshot represents 10 minutes => convert to hours
     const totalActiveMinutes = screenshotLogs.length * 10;
@@ -98,7 +102,8 @@ class ActivityService {
     const allLogs = [];
 
     activities.forEach((row) => {
-      const activityArray = JSON.parse(row.activity_data || "[]");
+      const activityArray = row.activity_data || "[]";
+      // const activityArray = JSON.parse(row.activity_data || "[]");
 
       activityArray.forEach((activity) => {
         allLogs.push({
@@ -125,7 +130,8 @@ class ActivityService {
         let logs = [];
         
         try {
-          logs = JSON.parse(row.activity_data || "[]");
+          // logs = JSON.parse(row.activity_data || "[]");
+          logs = row.activity_data || "[]";
         } catch (parseError) {
           console.error(`Invalid JSON for user ${userId}:`, parseError);
           continue; // Skip this user if JSON is invalid
@@ -143,6 +149,7 @@ class ActivityService {
           await db.execute(
             "UPDATE activity_logs SET activity_data = ? WHERE user_id = ?",
             [JSON.stringify(filteredLogs), userId]
+            // [filteredLogs, userId]
           );
           totalDeleted += deletedCount;
           console.log(`Deleted ${deletedCount} old logs for user ${userId}`);
@@ -159,8 +166,6 @@ class ActivityService {
 }
 
 module.exports = ActivityService;
-
-
 
 
 // // src/services/activityService.js
