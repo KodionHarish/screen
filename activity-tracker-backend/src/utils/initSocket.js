@@ -16,7 +16,7 @@ const adminToggleStore = new Map(); // userId -> { toggled: boolean, timestamp: 
 function initSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:3000", "http://localhost:3001"], 
+      origin: ["https://admin-panel-screen-tracker.vercel.app", "http://localhost:3001"], 
       credentials: true,
       methods: ["GET", "POST"],
     },

@@ -85,7 +85,8 @@ function connectToBackendSocket(userId) {
   // Connect with userId as query param
   socket = io(
     // "http://localhost:5000",
-    `${process.env.Api_Base_URL}`,
+    "https://screen-tracker-backend-production.up.railway.app",
+    // `${process.env.Api_Base_URL}`,
     
   {
     query: { userId },
@@ -632,7 +633,8 @@ async function logActivity(data, memoText = "") {
 
     const response = await axios.post(
       // "http://localhost:5000/api/activities/log",
-      `${process.env.Api_Base_URL}/api/activities/log`,
+      // `${process.env.Api_Base_URL}/api/activities/log`,
+      "https://screen-tracker-backend-production.up.railway.app/api/activities/log",
        form, {
       headers: form.getHeaders(),
       timeout: 30000, // 30 second timeout

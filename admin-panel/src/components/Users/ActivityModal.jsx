@@ -159,8 +159,6 @@ export default function ActivityModal({
           <div className="flex justify-center gap-6">
             <div className="lg:col-span-2 w-[580px]">
               <img src={activity.screenshotUrl} alt="Activity screenshot" className="w-full rounded-lg border" />
-              {/* <img src={`${process.env.REACT_APP_API_BASE_URL}/uploads/${activity.screenshotName}`} alt="Activity screenshot" className="w-full rounded-lg border" /> */}
-              
               <button onClick={openModal} className="mt-4 text-md text-green-600 flex gap-[4px]">
                 <Trash2 /> Remove
               </button>

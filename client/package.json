@@ -2,26 +2,60 @@
   "name": "client",
   "version": "1.0.0",
   "main": "main.js",
+  "description": "Screen tracking client application",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-builder",
     "start": "electron .",
     "watch": "nodemon --exec electron ."
   },
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "electron": "^36.1.0"
+    "electron": "^36.1.0",
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "axios": "^1.9.0",
     "dotenv": "^17.2.1",
-    "electron-store": "^10.0.1",
+    "electron-store": "^8.2.0",
     "get-windows": "^9.2.0",
     "jsonwebtoken": "^9.0.2",
     "node-global-key-listener": "^0.3.0",
     "nodemon": "^3.1.10",
     "screenshot-desktop": "^1.15.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "temp": "^0.9.4"
+  },
+  "build": {
+    "appId": "com.example.client",
+    "productName": "ClientApp",
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/get-windows/**/*",
+      "node_modules/screenshot-desktop/**/*",
+      "node_modules/node-global-key-listener/**/*"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

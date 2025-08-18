@@ -13,13 +13,13 @@ const { initSocket } = require("./src/utils/initSocket");
 
 const app = express();
 
-// Middleware setup
+// Middleware setups
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin:"https://admin-panel-screen-tracker.vercel.app",
     credentials: true,
   })
 );

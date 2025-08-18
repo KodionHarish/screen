@@ -1,5 +1,4 @@
 // formHandler.js
-import { postData } from './api.js';
 
 const form = document.getElementById('registerForm');
 const errorBox = document.getElementById('registerError');
@@ -18,7 +17,12 @@ if (form) {
 
     try {
       // const result = await postData('http://127.0.0.1:5000/api/users/register', data);
-      const result = await postData('http://127.0.0.1:5000/api/auth/register', data);
+      // const result = await postData('http://127.0.0.1:5000/api/auth/register', data);
+      const result = await fetch("https://screen-tracker-backend-production.up.railway.app/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
       alert('Registration successful!');
       console.log(result,"fdfsf");
       

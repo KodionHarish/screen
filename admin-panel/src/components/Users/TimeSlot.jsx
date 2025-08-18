@@ -100,7 +100,6 @@ export default function TimeSlot({ slot, onScreenshotClick }) {
               <div key={screenshotIndex} className="relative">
                 <img
                   src={screenshot.screenshotUrl}
-                  // src={`${process.env.REACT_APP_API_BASE_URL}/uploads/${screenshot.screenshotName}`}
                   alt="Activity screenshot"
                   className="w-full h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80"
                   onClick={() => onScreenshotClick(screenshot)}

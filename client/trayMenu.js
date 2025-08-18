@@ -1,18 +1,18 @@
 // trayMenu.js
-import path from "path";
-import { Tray, Menu } from "electron";
-import { fileURLToPath } from 'url';
+const path = require("path");
+const { Tray, Menu } = require("electron");
+
 let tray = null;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-export function createTray(mainWindow, onQuit) {
+
+function createTray(mainWindow, onQuit) {
   tray = new Tray(path.join(__dirname, "image.png"));
+
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Show App",
       click: () => {
         mainWindow.show();
-        mainWindow.focus(); 
+        mainWindow.focus();
       },
     },
     {
@@ -21,9 +21,7 @@ export function createTray(mainWindow, onQuit) {
         mainWindow.hide();
       },
     },
-    {
-      type: "separator"
-    },
+    { type: "separator" },
     {
       label: "Quit",
       click: () => {
@@ -35,7 +33,7 @@ export function createTray(mainWindow, onQuit) {
   tray.setToolTip("Screen Tracker App");
   tray.setContextMenu(contextMenu);
 
-  // Double-click to show/hide the window
+  // Double-click to toggle visibility
   tray.on("double-click", () => {
     if (mainWindow.isVisible()) {
       mainWindow.hide();
@@ -45,8 +43,10 @@ export function createTray(mainWindow, onQuit) {
     }
   });
 
-  // Single click to show context menu (Windows behavior)
+  // Single click (Windows behavior)
   tray.on("click", () => {
     tray.popUpContextMenu();
   });
 }
+
+module.exports = { createTray };

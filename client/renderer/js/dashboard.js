@@ -321,7 +321,7 @@ function showAdminTrackingBanner(message) {
 
 function initializeSocket(userId,apiBaseUrl) {
   currentUserId = userId;
-  const socketUrl = apiBaseUrl || "http://localhost:5000";
+  const socketUrl = apiBaseUrl || "https://screen-tracker-backend-production.up.railway.app";
   socket = io(
     // "http://localhost:5000", 
     socketUrl,
@@ -899,12 +899,11 @@ function createNotificationStyles() {
       window.location.href = "login.html";
       return;
     }
-    const apiBaseUrl = window.electronAPI.getApiBaseUrl() || "http://localhost:5000";
+    const apiBaseUrl = "https://screen-tracker-backend-production.up.railway.app";
 
     // Load user profile
     const res = await fetch(
-      // "http://localhost:5000/api/users/profile", 
-     `${apiBaseUrl}/api/users/profile`,
+      `${apiBaseUrl}/api/users/profile`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

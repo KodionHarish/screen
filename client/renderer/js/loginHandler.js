@@ -1,4 +1,4 @@
-const socket = io("http://localhost:5000");
+const socket = io("https://screen-tracker-backend-production.up.railway.app");
 const loginForm = document.getElementById("loginForm");
 const errorBox = document.getElementById("loginError");
 
@@ -8,7 +8,7 @@ loginForm.addEventListener("submit", async (e) => {
   errorBox.textContent = "";
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("https://screen-tracker-backend-production.up.railway.app/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
