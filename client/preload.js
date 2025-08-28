@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // Authentication
   setToken: (token) => ipcRenderer.send("set-token", token),
   setUserId: (userId) => ipcRenderer.send("set-user-id", userId),
-  clearToken: () => ipcRenderer.send("clear-token"),
+  clearToken: () => ipcRenderer.invoke("clear-token"),
   getToken: () => ipcRenderer.invoke("get-token"),
   getUserId: () => ipcRenderer.invoke("get-user-id"),
 

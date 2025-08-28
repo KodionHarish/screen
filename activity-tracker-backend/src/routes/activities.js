@@ -8,31 +8,6 @@ const streamifier = require('streamifier');
 
 const router = express.Router();
  
-// router.post('/log', upload.single('screenshot'), ActivityController.logActivity);
-// router.post('/log', upload.single('screenshot'), async (req, res) => {
-//   try {
-//     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-
-//     // Upload to Cloudinary
-//     const result = await new Promise((resolve, reject) => {
-//       const stream = cloudinary.uploader.upload_stream(
-//         { folder: 'activity_screenshots' }, // Optional folder name
-//         (error, result) => {
-//           if (result) resolve(result);
-//           else reject(error);
-//         }
-//       );
-//       streamifier.createReadStream(req.file.buffer).pipe(stream);
-//     });
-
-//     // Call your controller with Cloudinary URL instead of local path
-//     await ActivityController.logActivity(req, res, result.secure_url);
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Upload failed' });
-//   }
-// });
 router.post('/log', upload.single('screenshot'), async (req, res) => {
   try {
     let screenshotUrl = null;

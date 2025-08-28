@@ -99,6 +99,7 @@ async function toggleTracking() {
       "Admin has disabled tracking. Please contact admin to enable it.",
       "warning"
     );
+    window.electronAPI.showNotification("Tracking Disabled", "Admin has disabled tracking. Please contact admin to enable it.");
     return;
   }
 
@@ -127,6 +128,8 @@ async function toggleTracking() {
         socket.emit("user-tracking-status", {
           userId: currentUserId,
           isTracking: isTrackingActive,
+          isOnline: true, 
+          adminTrackingEnabled: adminTrackingEnabled,
         });
       }
     } else {
@@ -173,7 +176,9 @@ function addNotification(title, message, type = "info") {
   }
   updateNotificationUI();
   updateNotificationBadge();
+  window.electronAPI.showNotification(title, message);
 }
+
 
 // ✅ Update notification UI
 function updateNotificationUI() {
@@ -323,9 +328,7 @@ function initializeSocket(userId,apiBaseUrl) {
   currentUserId = userId;
   const socketUrl = apiBaseUrl || "https://screen-tracker-backend-production.up.railway.app";
   socket = io(
-    // "http://localhost:5000", 
     socketUrl,
-    // `${process.env.Api_Base_URL}`,
   {
     query: { userId: userId },
     withCredentials: true,
@@ -373,7 +376,8 @@ function initializeSocket(userId,apiBaseUrl) {
 
   // **UPDATED: Handle admin toggle status (with fallback)**
   socket.on("admin-toggle-status", ({ toggled, userId }) => {
-    console.log("📊 Admin toggle status received:", toggled, "for user:", userId);
+      console.log("📊 Admin toggle status received:", toggled, "for user:", userId);
+    console.log("🔔 About to call addNotification from admin-toggle-status");
     
     if (userId === currentUserId || !userId) {
       adminTrackingEnabled = toggled;
@@ -381,10 +385,13 @@ function initializeSocket(userId,apiBaseUrl) {
       updateAdminToggleButton();
       
       // Show a banner notification to user
+       console.log("🔔 Calling direct showNotification from toggle handler");
       if (toggled) {
         showAdminTrackingBanner("📊 Admin tracking has been enabled for your account");
+        // window.electronAPI.showNotification("Admin Update", "Tracking has been enabled");
       } else {
         showAdminTrackingBanner("📊 Admin tracking has been disabled for your account");
+        // window.electronAPI.showNotification("Admin Update", "Tracking has been disabled");
       }
       
       // Emit current tracking status
@@ -420,6 +427,7 @@ function initializeSocket(userId,apiBaseUrl) {
       notification.message,
       "admin"
     );
+    //  window.electronAPI.showNotification(notification.title || "Admin Message", notification.message);
   });
 
   // Handle status updates
@@ -445,8 +453,10 @@ function initializeSocket(userId,apiBaseUrl) {
       if (previousStatus !== adminTrackingEnabled) {
         if (adminTrackingEnabled) {
           showAdminTrackingBanner("📊 Admin tracking has been enabled for your account");
+          window.electronAPI.showNotification("Admin Update", "Tracking has been enabled");
         } else {
           showAdminTrackingBanner("📊 Admin tracking has been disabled for your account");
+          window.electronAPI.showNotification("Admin Update", "Tracking has been disabled");
         }
       }
       
@@ -632,6 +642,21 @@ function createNotificationStyles() {
       background: #545b62;
     }
     
+    .mark-all-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    .mark-all-btn:hover {
+      background: #545b62;
+    }
+
     .notifications-list {
       max-height: 400px;
       overflow-y: auto;
@@ -962,6 +987,7 @@ function createNotificationStyles() {
             <span class="notification-panel-title">Notifications</span>
             <div class="notification-panel-actions">
               <button class="clear-all-btn" onclick="clearAllNotifications()">Clear All</button>
+              <button class="mark-all-btn" onclick="markAllAsRead()">Mark All as Read</button>
             </div>
           </div>
           <div class="notifications-list">
@@ -1128,28 +1154,6 @@ function createNotificationStyles() {
       });
     }
 
-    // ✅ Listen for tracking status changes from electron
-    window.electronAPI.onTrackingStatusChanged((data) => {
-      console.log("📊 Tracking status changed:", data);
-      isTrackingActive = data.isActive;
-      updateTrackingDisplay(data);
-
-      if (!isTrackingActive && adminTrackingEnabled && socket && currentUserId) {
-        socket.emit("user-inactive-alert", {
-          userId: currentUserId,
-          message: "User is online but tracking is inactive.",
-        });
-      }
-
-      // Emit status to server
-      if (socket && currentUserId) {
-        socket.emit("user-tracking-status", {
-          userId: currentUserId,
-          isTracking: isTrackingActive,
-        });
-      }
-    });
-
     // ✅ Listen for real-time time updates
     window.electronAPI.onTrackingTimeUpdate((data) => {
       updateTrackingDisplay(data);
@@ -1204,5 +1208,6 @@ document.addEventListener("visibilitychange", () => {
 
 // Make functions available globally for onclick handlers
 window.markAsRead = markAsRead;
+window.markAllAsRead = markAllAsRead;
 window.deleteNotification = deleteNotification;
 window.clearAllNotifications = clearAllNotifications;

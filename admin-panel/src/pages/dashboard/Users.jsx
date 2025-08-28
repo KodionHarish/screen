@@ -131,6 +131,13 @@ const UsersAll = () => {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
+  // Function to mark all notifications as read
+  const markAllAsRead = () => {
+    setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
+    setUnreadCount(0);
+    setUserAlerts({});
+  };
+
   // Function to clear all notifications
   const clearAllNotifications = () => {
     setNotifications([]);
@@ -471,6 +478,7 @@ const UsersAll = () => {
         unreadCount={unreadCount}
         onMarkAsRead={markAsRead}
         onClearAll={clearAllNotifications}
+        onMarkAllAsRead={markAllAsRead}
       />
 
       <SendMessageModal

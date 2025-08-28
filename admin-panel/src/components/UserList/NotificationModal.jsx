@@ -31,6 +31,7 @@ const NotificationModal = ({
   unreadCount,
   onMarkAsRead,
   onClearAll,
+  onMarkAllAsRead,
 }) => {
   const getAlertIcon = (severity) => {
     switch (severity) {
@@ -62,14 +63,21 @@ const NotificationModal = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          <Box display="flex" alignItems="center" gap={1}>
-            <Bell className="w-5 h-5" />
+          <Box display="flex" alignItems="center" gap={1.5}>
+            <Badge badgeContent={unreadCount} color="error">
+              <Bell className="w-5 h-5" />
+            </Badge>
             <Typography variant="h6">System Notifications</Typography>
-            {unreadCount > 0 && (
-              <Badge badgeContent={unreadCount} color="error" />
-            )}
           </Box>
           <Box>
+              <Button
+                size="small"
+                onClick={onMarkAllAsRead}
+                disabled={unreadCount === 0}  
+                sx={{ mr: 1 }}
+              >
+                Mark All as Read
+              </Button>
             <Button
               size="small"
               onClick={onClearAll}

@@ -7,8 +7,9 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_EMAIL_PASS,
+    pass: process.env.ADMIN_EMAIL_PASS, 
   },
+  
 });
 async function sendOfflineEmail(userId, messages) {
   try {
@@ -31,7 +32,7 @@ async function sendOfflineEmail(userId, messages) {
 }
 function notifyUser(io, { userId, name, message }) {
   const { offlineNotifications, emailSent } = sharedStore;
-  const targetUserId = parseInt(userId);
+  const targetUserId = parseInt(userId); 
   const userSocketIds = [...connectedUsers.entries()]
     .filter(([, uid]) => uid === targetUserId)
     .map(([sid]) => sid);
@@ -44,25 +45,15 @@ function notifyUser(io, { userId, name, message }) {
     id: Date.now() + Math.random(),
   };
   if (isOnline) {
-    userSocketIds.forEach(sid => io.to(sid).emit("notify-message", notification));
+    // userSocketIds.forEach(sid => io.to(sid).emit("notify-message", notification));
     io.to(`user-${targetUserId}`).emit("notify-message", notification);
     return { success: true, status: "delivered" };
   }
   const queue = offlineNotifications.get(targetUserId) || [];
   queue.push(notification);
   offlineNotifications.set(targetUserId, queue);
-  io.to(`user-${targetUserId}`).emit("notify-message", notification);
-  // if (queue.length >= 3 && !emailSent.get(targetUserId)) {
-  //   emailSent.set(targetUserId, true);
-  //   setTimeout(() => {
-  //     const stillOffline = ![...connectedUsers.values()].includes(targetUserId);
-  //     const latestQueue = offlineNotifications.get(targetUserId) || [];
-  //     if (stillOffline && latestQueue.length >= 3) {
-  //       sendOfflineEmail(targetUserId, latestQueue);
-  //       // offlineNotifications.set(targetUserId, []);
-  //     }
-  //   }, 2 * 60 * 1000); // 2 minutes
-  // }
+  // io.to(`user-${targetUserId}`).emit("notify-message", notification);
+
   return { success: true, status: "queued" };
 }
 function deliverQueuedNotifications(io, userId) {
@@ -71,8 +62,15 @@ function deliverQueuedNotifications(io, userId) {
   const queue = offlineNotifications.get(targetUserId);
   if (!queue?.length) return 0;
   console.log("🟢 [Queue On Reconnect]", targetUserId, queue);
-  queue.forEach(n => {
-    io.to(`user-${targetUserId}`).emit("notify-message", n);
+    // FIXED: Add small delay between notifications to prevent UI overload
+
+  queue.forEach((notification, index) => {
+
+    setTimeout(() => {
+
+      io.to(`user-${targetUserId}`).emit("notify-message", notification);
+
+    }, index * 100); // 100ms delay between each notification
   });
   offlineNotifications.delete(targetUserId);
   emailSent.delete(targetUserId);

@@ -6,6 +6,7 @@
   "scripts": {
     "package": "electron-builder",
     "start": "electron .",
+    "package:unpacked": "electron-builder --dir",
     "watch": "nodemon --exec electron ."
   },
   "author": "",
@@ -21,6 +22,7 @@
     "get-windows": "^9.2.0",
     "jsonwebtoken": "^9.0.2",
     "node-global-key-listener": "^0.3.0",
+    "node-notifier": "^10.0.1",
     "nodemon": "^3.1.10",
     "screenshot-desktop": "^1.15.1",
     "socket.io-client": "^4.8.1",
@@ -43,12 +45,17 @@
       "buildResources": "build"
     },
     "win": {
+      "icon": "assets/image.ico",
       "target": [
         {
           "target": "nsis",
           "arch": [
             "x64"
           ]
+        },
+        {
+          "target": "dir",
+          "arch": [ "x64" ]
         }
       ],
       "requestedExecutionLevel": "requireAdministrator"

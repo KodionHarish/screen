@@ -28,7 +28,14 @@ function initSocket(server) {
     // Handle user connection with userId from query params
     const userId = parseInt(socket.handshake.query.userId);
     console.log(`👤 User attempting to connect: ${userId}`);
-
+    const userType = socket.handshake.query.userType;
+  
+    // Handle admin dashboard connections separately
+    if (userType === 'admin') {
+      socket.join('admin-room');
+      console.log(`👨‍💼 Admin dashboard connected: ${socket.id}`);
+      return; // Don't treat this as a user connection
+    }
     if (userId && !isNaN(userId)) {
       // Join user-specific room
       socket.join(`user-${userId}`);
@@ -172,7 +179,7 @@ function initSocket(server) {
       } catch (err) {
         callback({ success: false, message: err.message });
       }
-    });
+    }); 
 
     // **UPDATED: Handle admin toggle user event with persistent storage**
     socket.on("admin-toggle-user", ({ userId, toggled }, callback) => {
@@ -336,41 +343,55 @@ function initSocket(server) {
       }
     });
 
-    // Clean up user status on disconnect
-    socket.on("user-logout", async ({ userId }) => {
-      const targetUserId = parseInt(userId);
+
+     // REPLACE your existing user-logout handler with this:
+  socket.on("user-logout", async ({ userId }, callback) => {
+    const targetUserId = parseInt(userId);
+    
+    if (!isNaN(targetUserId)) {
+      console.log(`Processing logout for user ${targetUserId}`);
       
-      if (!isNaN(targetUserId)) {
-        // Update status to offline
-        const userStatus = connectedUsers.get(targetUserId);
-        if (userStatus) {
-          userStatus.isOnline = false;
-          userStatus.lastUpdate = new Date().toISOString();
-          connectedUsers.set(targetUserId, userStatus);
-        }
-        
-        // Remove all sockets for this user
-        for (const [sockId, uid] of connectedUsers.entries()) {
-          if (uid === targetUserId) {
-            connectedUsers.delete(sockId);
-          }
-        }
-        
-        console.log(`👋 User ${targetUserId} logged out`);
-        
-        // Emit status update to admin
-        io.emit("user-status-update", {
-          userId: targetUserId,
-          userName: userStatus?.userName || "Unknown",
-          isTracking: false,
-          adminTrackingEnabled: userStatus?.adminTrackingEnabled || false,
-          isOnline: false,
-          timestamp: new Date().toISOString()
-        });
-        
-        io.emit("status-updated", { userId: targetUserId, isOnline: false });
+      // Update status to offline
+      const userStatus = connectedUsers.get(targetUserId);
+      if (userStatus) {
+        userStatus.isOnline = false;
+        userStatus.lastUpdate = new Date().toISOString();
+        connectedUsers.set(targetUserId, userStatus);
       }
-    });
+      
+      // Remove ALL sockets for this user
+      const socketsToRemove = [];
+      for (const [sockId, uid] of connectedUsers.entries()) {
+        if (uid === targetUserId) {
+          socketsToRemove.push(sockId);
+        }
+      }
+      
+      socketsToRemove.forEach(sockId => {
+        connectedUsers.delete(sockId);
+        console.log(`Removed socket ${sockId} for user ${targetUserId}`);
+      });
+      
+      console.log(`User ${targetUserId} logged out completely`);
+      
+      // Emit status updates
+      io.emit("user-status-update", {
+        userId: targetUserId,
+        userName: userStatus?.userName || "Unknown",
+        isTracking: false,
+        adminTrackingEnabled: userStatus?.adminTrackingEnabled || false,
+        isOnline: false,
+        timestamp: new Date().toISOString()
+      });
+      
+      io.emit("status-updated", { userId: targetUserId, isOnline: false });
+      
+      // Send acknowledgment back to client
+      if (callback && typeof callback === 'function') {
+        callback({ success: true, message: "Logout processed successfully" });
+      }
+    }
+  });
 
     // Handle ping/pong for connection health
     socket.on('ping', () => {

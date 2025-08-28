@@ -258,34 +258,35 @@ static async usersWithLogs(date) {
           })
         : [];
 
-      const screenshotLogs = filteredLogs.filter(
-        log => log.screenshotName || log.screenshotUrl
-      );
-      const totalActiveMinutes = screenshotLogs.length * 10;
-
-      let formattedActiveTime;
-      if (totalActiveMinutes < 60) {
-        formattedActiveTime = `${totalActiveMinutes} min`;
-      } else {
-        const hours = Math.floor(totalActiveMinutes / 60);
-        const minutes = totalActiveMinutes % 60;
-        formattedActiveTime =
-          minutes > 0 ? `${hours} hr ${minutes} min` : `${hours}:00 hr`;
-      }
-
-      let lastScreenshotTime = null;
-      if (screenshotLogs.length > 0) {
-        const latestLog = screenshotLogs.reduce((a, b) =>
-          new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+        const screenshotLogs = filteredLogs.filter(
+          log => log.screenshotName || log.screenshotUrl
         );
-        const dateObj = new Date(latestLog.timestamp);
-        let hours = dateObj.getHours();
-        const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-        const ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12 || 12;
-        lastScreenshotTime = `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
-      }
+        const totalActiveMinutes = screenshotLogs.length * 10;
 
+        let formattedActiveTime;
+        if (totalActiveMinutes < 60) {
+          formattedActiveTime = `${totalActiveMinutes} min`;
+        } else {
+          const hours = Math.floor(totalActiveMinutes / 60);
+          const minutes = totalActiveMinutes % 60;
+          formattedActiveTime =
+            minutes > 0 ? `${hours} hr ${minutes} min` : `${hours}:00 hr`;
+        }
+
+        let lastScreenshotTime = null;
+        if (screenshotLogs.length > 0) {
+          const latestLog = screenshotLogs.reduce((a, b) =>
+            new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+          );
+          const dateObj = new Date(latestLog.timestamp);
+          console.log('Raw timestamp:', latestLog.timestamp);
+          console.log('Parsed date:', dateObj);
+          let hours = dateObj.getHours();
+          const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+          const ampm = hours >= 12 ? "PM" : "AM";
+          hours = hours % 12 || 12;
+          lastScreenshotTime = `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
+        }
       let statusColor;
       if (screenshotLogs.length < 24) {
         statusColor = "red";
@@ -301,7 +302,7 @@ static async usersWithLogs(date) {
         lastScreenshotTime,
         totalLength: screenshotLogs.length,
         activity_data: filteredLogs,
-        statusColor,
+        statusColor,  
         activeStatus: [...connectedUsers.values()].includes(user.id)
       };
     })

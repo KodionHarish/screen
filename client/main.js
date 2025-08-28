@@ -11,6 +11,7 @@ const { activeWindow } = require("get-windows");
 const { start } = require("repl");
 const { createTray } = require("./trayMenu");
 const { io } = require("socket.io-client");
+
 const store = new ElectronStore();
 let currentApp = null;
 let currentAppTitle = null;
@@ -45,6 +46,35 @@ let currentCycle = 0;
 let cycleStartTime = null;
 let screenshotTakenInCurrentCycle = false;
 let lastMousePosition = { x: 0, y: 0 };
+
+// Add this at the top of main.js
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.example.client');
+}
+
+// Add this function to check and request notification permissions (Windows)
+function checkNotificationPermissions() {
+  // On Windows, we need to check if notifications are enabled
+  if (process.platform === 'win32') {
+    try {
+      const testNotification = new Notification({
+        title: 'Permission Test',
+        body: 'Testing notification permissions'
+      });
+      
+      testNotification.on('show', () => {
+        console.log('✅ Notifications are working!');
+      });
+      
+      testNotification.on('failed', (error) => {
+        console.error('❌ Notification failed:', error);
+      });
+      
+    } catch (error) {
+      console.error('❌ Notification creation failed:', error);
+    }
+  }
+}
 
 
 function createWindow() {
@@ -111,24 +141,36 @@ function connectToBackendSocket(userId) {
     console.log("🔌 Disconnected from backend socket");
   });
 }
-// Handle notification from renderer process
-ipcMain.handle('show-notification', (event, { title, message }) => {
-  if (Notification.isSupported()) {
+
+ipcMain.handle('show-notification', async (event, { title, message }) => {
+  const timestamp = new Date().toLocaleTimeString();
+  
+  try {
     const notification = new Notification({
       title: title,
       body: message,
-      // icon: path.join(__dirname, '')
+      icon: path.join(__dirname, 'assets', 'image.ico'),
+    });
+
+    notification.on('show', () => {
+      console.log(`✅ [${timestamp}] Notification SHOWN:`, title);
+    });
+
+    notification.on('failed', (error) => {
+      console.error(`❌ [${timestamp}] Notification FAILED:`, error);
+    });
+
+    notification.on('close', () => {
+      console.log(`🔔 [${timestamp}] Notification CLOSED:`, title);
     });
 
     notification.show();
-
-    notification.on('click', () => {
-      mainWindow.focus();
-    });
-
-    return { success: true };
+    
+    return { success: true, timestamp };
+  } catch (error) {
+    console.error(`❌ [${timestamp}] Error:`, error);
+    return { success: false, error: error.message };
   }
-  return { success: false, error: 'Notifications not supported' };
 });
 
 // ✅ IPC handlers for tracking control
@@ -147,7 +189,7 @@ ipcMain.handle("toggle-tracking", (event) => {
   if (isTrackingActive) {
     stopAllTracking();
     return { success: true, isActive: false, totalTime: totalTrackingTime };
-  } else {
+  } else { 
     startAllTracking(userId);
     return { success: true, isActive: true, totalTime: totalTrackingTime };
   }
@@ -178,7 +220,7 @@ ipcMain.on("set-token", async (event, token) => {
   store.set("isTrackingActive", false);
 });
 
-ipcMain.on("clear-token", () => {
+ipcMain.handle("clear-token", () => {
   store.delete("token");
   store.delete("userId");
   store.delete("isTrackingActive");
@@ -205,7 +247,7 @@ ipcMain.handle('set-memo', (event, memoText) => {
   currentMemo = memoText || "";
   return true;
 });
-
+  
 // ✅ Function to reset tracking counters
 function resetTrackingCounters() {
   keyboardCount = 0;
@@ -363,7 +405,7 @@ function startTrackingTimeCounter() {
         console.log("⚠️ Error sending time update:", error.message);
       }
     }
-  }, 1000); // Update every second
+  }, 1000); 
 }
 
 // ✅ FIXED: Enhanced input tracking with correct variable names
@@ -653,23 +695,27 @@ async function logActivity(data, memoText = "") {
   }
 }
 
-// ✅ Enhanced app lifecycle management
-app.whenReady().then(() => {
-  createWindow();
-  createTray(mainWindow, () => {
-    app.isQuiting = true; // Set flag to allow actual quit
-    app.quit();
+  // ✅ Enhanced app lifecycle management
+  app.whenReady().then(() => {
+  
+  // Check notification permissions
+  checkNotificationPermissions();
+
+    createWindow();
+    createTray(mainWindow, () => {
+      app.isQuiting = true; 
+      app.quit();
+    });
+    app.on("activate", function () {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
+      else {
+        // On macOS, show the window when clicking dock icon
+        mainWindow.show();
+      }
+    });
   });
-  app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-    else {
-      // On macOS, show the window when clicking dock icon
-      mainWindow.show();
-    }
-  });
-});
 
 app.on("window-all-closed", function () {
   console.log("🔄 All windows closed");
